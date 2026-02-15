@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS - Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>LMS Admin</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li onclick="showSection('overview')" class="active"><i class="fas fa-home"></i> Overview</li>
+                <li onclick="showSection('users')"><i class="fas fa-users"></i> User Management</li>
+                <li onclick="showSection('degrees')"><i class="fas fa-graduation-cap"></i> Degree & Course Management
+                </li>
+                <li onclick="showSection('announcements')"><i class="fas fa-bullhorn"></i> Announcements</li>
+                <li onclick="showSection('lectures')"><i class="fas fa-video"></i> Lecture Management</li>
+                <li onclick="showSection('profile')"><i class="fas fa-user-cog"></i> Profile</li>
+                <li onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div id="overview" class="section active">
+                <h2>Dashboard Overview</h2>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <p id="totalUsers">Loading...</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Degrees</h3>
+                        <p id="totalDegrees">Loading...</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Courses</h3>
+                        <p id="totalCourses">Loading...</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Announcements</h3>
+                        <p id="totalAnnouncements">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="users" class="section">
+                <h2>User Management</h2>
+                <table id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="degrees" class="section">
+                <h2>Degree & Course Management</h2>
+
+                <!-- Tabs or Split View -->
+                <div class="tabs">
+                    <button class="btn-secondary active" onclick="showDegreeTab('degreeListTab')">Degrees</button>
+                    <button class="btn-secondary" onclick="showDegreeTab('courseListTab')">Courses</button>
+                </div>
+                <br>
+
+                <!-- Degree Tab -->
+                <div id="degreeListTab" class="tab-content">
+                    <div class="action-bar">
+                        <input type="text" id="searchDegree" placeholder="Search degrees..." onkeyup="searchDegrees()">
+                        <button onclick="showAddDegreeModal()" class="btn-primary">Create Degree Program</button>
+                    </div>
+                    <table id="degreesTable">
+                        <thead>
+                            <tr>
+                                <th>Degree Name</th>
+                                <th>Faculty</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Degrees populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Course Tab (Moved from original Course Management) -->
+                <div id="courseListTab" class="tab-content" style="display:none;">
+                    <div class="action-bar">
+                        <button onclick="showAddCourseModal()" class="btn-primary">Add Course</button>
+                    </div>
+                    <div id="coursesList" class="grid-container">
+                        <!-- Courses populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="degreeDetails" class="section">
+                <button onclick="showSection('degrees')" class="btn-secondary" style="margin-bottom: 10px;">&larr; Back
+                    to List</button>
+                <h2 id="detailsDegreeName">Degree Name</h2>
+                <div class="profile-card" style="max-width: 100%; margin-bottom: 20px;">
+                    <p><strong>Faculty:</strong> <span id="detailsFaculty"></span></p>
+                    <p><strong>Duration:</strong> <span id="detailsDuration"></span> Years</p>
+                    <p><strong>Status:</strong> <span id="detailsStatus"></span></p>
+                    <p><strong>Description:</strong></p>
+                    <p id="detailsDescription"></p>
+                </div>
+
+                <h3>Assigned Courses</h3>
+                <div class="action-bar">
+                    <button onclick="showAddCourseToDegreeModal()" class="btn-primary">Add Course to Degree</button>
+                </div>
+                <table id="degreeCoursesTable">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Course Title</th>
+                            <th>Lecturer</th>
+                            <th>Students</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Assigned courses -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="courseDetails" class="section">
+                <button onclick="showSection('degreeDetails')" class="btn-secondary" style="margin-bottom: 10px;">&larr;
+                    Back to Degree</button>
+                <div class="profile-card" style="max-width: 100%; border-top: 5px solid #2980b9;">
+                    <h2 id="cdTitle" style="margin-top:0; border:none;">Course Title</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                        <div>
+                            <p><strong>Code:</strong> <span id="cdCode"></span></p>
+                            <p><strong>Degree:</strong> <span id="cdDegree"></span></p>
+                            <p><strong>Semester:</strong> <span id="cdSemester"></span> | <strong>Credits:</strong>
+                                <span id="cdCredits"></span>
+                            </p>
+                        </div>
+                        <div>
+                            <p><strong>Lecturer:</strong> <span id="cdLecturer">Unassigned</span> <button
+                                    onclick="showAssignLecturerModal()" class="btn-secondary"
+                                    style="padding: 2px 8px; font-size: 0.8rem;">Assign</button></p>
+                            <p><strong>Students:</strong> <span id="cdStudentCount">0</span></p>
+                            <p><strong>Status:</strong> <span id="cdStatus"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tabs" style="margin-top: 20px;">
+                    <button class="btn-secondary active" onclick="showCourseTab('overview')">Overview</button>
+                    <button class="btn-secondary" onclick="showCourseTab('students')">Students</button>
+                    <button class="btn-secondary" onclick="showCourseTab('tasks')">Tasks</button>
+                    <button class="btn-secondary" onclick="showCourseTab('assignments')">Assignments</button>
+                    <button class="btn-secondary" onclick="showCourseTab('materials')">Materials</button>
+                    <button class="btn-secondary" onclick="showCourseTab('announcements')">Announcements</button>
+                    <button class="btn-secondary" onclick="showCourseTab('grades')">Grades</button>
+                </div>
+
+                <div id="cd-overview" class="course-tab-content"
+                    style="padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Course Description</h3>
+                    <p id="cdDescription"></p>
+                    <h3>Analytics</h3>
+                    <p>Coming soon...</p>
+                </div>
+                <div id="cd-students" class="course-tab-content"
+                    style="display:none; padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Enrolled Students</h3>
+                    <p>List of students...</p>
+                </div>
+                <!-- Other tabs placeholders -->
+                <div id="cd-tasks" class="course-tab-content"
+                    style="display:none; padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Tasks</h3>
+                </div>
+                <div id="cd-assignments" class="course-tab-content"
+                    style="display:none; padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Assignments</h3>
+                </div>
+                <div id="cd-materials" class="course-tab-content"
+                    style="display:none; padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Materials</h3>
+                </div>
+                <div id="cd-announcements" class="course-tab-content"
+                    style="display:none; padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Course Announcements</h3>
+                </div>
+                <div id="cd-grades" class="course-tab-content"
+                    style="display:none; padding: 20px; background: #2c2c2c; margin-top: 10px; border-radius: 8px;">
+                    <h3>Grades</h3>
+                </div>
+            </div>
+
+            <div id="announcements" class="section">
+                <h2>Announcements</h2>
+                <div class="action-bar">
+                    <button onclick="showAddAnnouncementModal()" class="btn-primary">Post Announcement</button>
+                </div>
+                <div id="announcementsList">
+                    <!-- Announcements will be populated here -->
+                </div>
+            </div>
+
+            <div id="lectures" class="section">
+                <h2>Lecture Management</h2>
+                <p>Manage lectures for courses here.</p>
+                <div id="lecturesList">
+                    <!-- Lectures placeholder -->
+                </div>
+            </div>
+
+            <div id="profile" class="section">
+                <h2>Admin Profile</h2>
+                <div class="profile-card">
+                    <p><strong>Name:</strong> <span id="adminName">Loading...</span></p>
+                    <p><strong>Email:</strong> <span id="adminEmail">Loading...</span></p>
+                    <p><strong>Role:</strong> <span id="adminRole">Loading...</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('courseModal')">&times;</span>
+            <h3>Add New Course</h3>
+            <form id="addCourseForm">
+                <input type="text" id="courseTitle" placeholder="Course Title" required>
+                <input type="text" id="courseCode" placeholder="Course Code (e.g. IT101)" required>
+                <!-- Degree Dropdown populated dynamically -->
+                <select id="courseDegree" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <option value="" disabled selected>Select Degree Program</option>
+                </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="number" id="courseSemester" placeholder="Semester" required min="1" max="8">
+                    <input type="number" id="courseCredits" placeholder="Credits" required min="1">
+                </div>
+                <input type="text" id="courseCategory" placeholder="Category" required>
+                <textarea id="courseDescription" placeholder="Description" required></textarea>
+                <select id="courseStatus" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <option value="ACTIVE">Active</option>
+                    <option value="ARCHIVED">Archived</option>
+                </select>
+                <button type="submit">Create Course</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="degreeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('degreeModal')">&times;</span>
+            <h3>Create Degree Program</h3>
+            <form id="addDegreeForm">
+                <input type="text" id="degreeName" placeholder="Degree Name (e.g. BSc in IT)" required>
+                <input type="text" id="degreeFaculty" placeholder="Faculty" required>
+                <select id="degreeDuration" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <option value="3">3 Years</option>
+                    <option value="4">4 Years</option>
+                </select>
+                <textarea id="degreeDescription" placeholder="Description" required></textarea>
+                <select id="degreeStatus" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <option value="ACTIVE">Active</option>
+                    <option value="ARCHIVED">Archived</option>
+                </select>
+                <button type="submit">Create Degree</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="assignLecturerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('assignLecturerModal')">&times;</span>
+            <h3>Assign Lecturer</h3>
+            <form id="assignLecturerForm">
+                <p>Assign lecturer to: <strong id="assignCourseTitle"></strong></p>
+                <select id="lecturerSelect" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <!-- Populated via JS -->
+                </select>
+                <select id="lecturerRoleSelect" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <option value="Main">Main Lecturer</option>
+                    <option value="Assistant">Assistant Lecturer</option>
+                </select>
+                <button type="submit">Assign</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addCourseToDegreeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addCourseToDegreeModal')">&times;</span>
+            <h3>Add Course to Degree</h3>
+            <form id="addCourseToDegreeForm">
+                <p>Select a course to add:</p>
+                <select id="availableCoursesSelect"
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <!-- Available courses -->
+                </select>
+                <button type="submit">Add to Degree</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="announcementModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('announcementModal')">&times;</span>
+            <h3>Post Announcement</h3>
+            <form id="addAnnouncementForm">
+                <input type="text" id="announcementTitle" placeholder="Title" required>
+                <textarea id="announcementContent" placeholder="Content" required></textarea>
+                <button type="submit">Post</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="editCourseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editCourseModal')">&times;</span>
+            <h3>Edit Course</h3>
+            <form id="editCourseForm">
+                <input type="hidden" id="editCourseId">
+                <input type="text" id="editCourseTitle" placeholder="Course Title" required>
+                <input type="text" id="editCourseCode" placeholder="Course Code" required>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <input type="number" id="editCourseSemester" placeholder="Semester" required min="1" max="8">
+                    <input type="number" id="editCourseCredits" placeholder="Credits" required min="1">
+                </div>
+                <input type="text" id="editCourseCategory" placeholder="Category" required>
+                <textarea id="editCourseDescription" placeholder="Description" required></textarea>
+                <select id="editCourseStatus" required
+                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
+                    <option value="ACTIVE">Active</option>
+                    <option value="ARCHIVED">Archived</option>
+                </select>
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>
