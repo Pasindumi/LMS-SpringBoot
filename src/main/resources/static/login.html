@@ -6,25 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMS - Login</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
-    <div class="container">
-        <h2>Login</h2>
-        <form id="loginForm">
+<body class="auth-body">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem;"><i
+                    class="fas fa-graduation-cap"></i> LMS PRO</h1>
+            <h2>Welcome Back</h2>
+            <p>Login to your account to continue your journey</p>
+        </div>
+        <form id="loginForm" class="auth-form">
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required>
+                <label for="email">Email Address</label>
+                <div class="input-icon-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="name@example.com" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" required>
+                <div class="input-icon-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
             </div>
-            <button type="submit">Login</button>
+            <button type="submit" class="btn-primary auth-btn">Login</button>
         </form>
-        <div id="message" style="color: red; text-align: center; margin-top: 10px;"></div>
-        <div class="links">
-            <a href="register.html">Don't have an account? Register</a>
+        <div id="message"
+            style="color: #ef4444; text-align: center; margin-top: 1rem; font-size: 0.875rem; font-weight: 500;"></div>
+        <div class="auth-footer">
+            Don't have an account? <a href="register.html">Register</a>
         </div>
     </div>
 
@@ -56,8 +69,10 @@
                             const user = await userRes.json();
                             if (user.role === 'ADMIN') {
                                 window.location.href = 'admin-dashboard.html';
-                            } else if (user.role === 'INSTRUCTOR') {
+                            } else if (user.role === 'INSTRUCTOR' || user.role === 'LECTURER') {
                                 window.location.href = 'instructor-dashboard.html';
+                            } else if (user.role === 'STUDENT') {
+                                window.location.href = 'student-dashboard.html';
                             } else {
                                 window.location.href = 'dashboard.html';
                             }

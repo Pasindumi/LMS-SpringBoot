@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirebaseConfig {
@@ -24,9 +26,31 @@ public class FirebaseConfig {
         try {
             // Check if app already exists to avoid errors on reload
             if (FirebaseApp.getApps().isEmpty()) {
-                // User requested specific loading method
-                try (java.io.FileInputStream serviceAccount = new java.io.FileInputStream("src/main/resources/service-account.json")) {
-                    GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
+                DefaultResourceLoader loader = new DefaultResourceLoader();
+                InputStream serviceAccount = null;
+                try {
+                    Resource resource = loader.getResource(serviceAccountPath);
+                    if (resource.exists()) {
+                        serviceAccount = resource.getInputStream();
+                    }
+                } catch (Exception e) {
+                    System.out.println("Could not load Firebase key from path: " + serviceAccountPath + ". Checking environment variable...");
+                }
+
+                if (serviceAccount == null) {
+                    String envConfig = System.getenv("FIREBASE_CONFIG_JSON");
+                    if (envConfig != null && !envConfig.isEmpty()) {
+                        serviceAccount = new ByteArrayInputStream(envConfig.getBytes(StandardCharsets.UTF_8));
+                        System.out.println("Loading Firebase credentials from FIREBASE_CONFIG_JSON environment variable.");
+                    }
+                }
+
+                if (serviceAccount == null) {
+                    throw new IOException("Firebase service account credentials not found in path or environment variable.");
+                }
+
+                try (InputStream is = serviceAccount) {
+                    GoogleCredentials credentials = GoogleCredentials.fromStream(is);
                     FirebaseOptions.Builder optionsBuilder = new FirebaseOptions.Builder()
                             .setCredentials(credentials);
 
