@@ -662,7 +662,7 @@ document.getElementById('submissionForm')?.addEventListener('submit', async (e) 
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
 
-        const uploadRes = await fetch('/api/uploads', {
+        const uploadRes = await fetch(API_URL + '/api/uploads', {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') },
             body: formData
