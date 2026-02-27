@@ -774,7 +774,7 @@ async function uploadFile(fileInputId) {
     formData.append('file', fileInput.files[0]);
 
     const token = localStorage.getItem('token');
-    const res = await fetch('/api/uploads', {
+    const res = await fetch(API_URL + '/api/uploads', {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + token

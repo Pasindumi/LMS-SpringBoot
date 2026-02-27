@@ -62,7 +62,7 @@
 
                     // Fetch user details to determine role
                     try {
-                        const userRes = await fetch('http://localhost:8081/api/users/me', {
+                        const userRes = await fetch(API_URL + '/api/users/me', {
                             headers: { 'Authorization': 'Bearer ' + data.token }
                         });
                         if (userRes.ok) {
