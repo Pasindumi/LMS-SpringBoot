@@ -66,6 +66,19 @@ public class CourseService {
         return createCourse(course); // set() handles update/create
     }
 
+    public List<Course> getEnrolledCourses(String studentId) {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            ApiFuture<QuerySnapshot> future = db.collection(COLLECTION_NAME)
+                    .whereArrayContains("studentIds", studentId)
+                    .get();
+            return future.get().getDocuments().stream().map(doc -> doc.toObject(Course.class)).toList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
     public void deleteCourse(String courseId) {
         try {
             Firestore db = FirestoreClient.getFirestore();

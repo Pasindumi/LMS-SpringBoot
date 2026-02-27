@@ -48,9 +48,14 @@
                     document.getElementById('userRole').textContent = user.role;
                     document.getElementById('updateName').value = user.name;
 
-                    // Redirect if Admin
+                    // Redirect based on role
                     if (user.role === 'ADMIN') {
                         window.location.href = 'admin-dashboard.html';
+                    } else if (user.role === 'INSTRUCTOR' || user.role === 'LECTURER') {
+                        window.location.href = 'instructor-dashboard.html';
+                    } else if (user.role === 'STUDENT') {
+                        console.log("Redirecting student...");
+                        window.location.replace('student-dashboard.html');
                     }
                 }
             } catch (error) {

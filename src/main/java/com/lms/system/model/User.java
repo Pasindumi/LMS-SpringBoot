@@ -9,4 +9,10 @@ public class User {
     private String email;
     private String password;
     private String role; // "ADMIN", "INSTRUCTOR", "STUDENT"
+    
+    // Profile Fields
+    private String bio;
+    private String specialization;
+    private String phoneNumber;
+    private String profileImageUrl;
 }

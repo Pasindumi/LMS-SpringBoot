@@ -27,4 +27,32 @@ public class UserController {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
+
+    @GetMapping
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return ResponseEntity.ok(userService.getAllUsers());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(Authentication authentication, @RequestBody User updatedUser) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            if (user != null) {
+                user.setName(updatedUser.getName());
+                user.setBio(updatedUser.getBio());
+                user.setSpecialization(updatedUser.getSpecialization());
+                user.setPhoneNumber(updatedUser.getPhoneNumber());
+                userService.updateUser(user);
+                return ResponseEntity.ok(user);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
 }

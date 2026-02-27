@@ -1,23 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS - Home</title>
+    <title>LMS - Professional Learning Management System</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-    <div class="container">
-        <h1>Welcome to LMS</h1>
-        <p style="text-align: center;">Your Learning Management System</p>
-        <div class="links">
-            <button onclick="window.location.href='login.html'">Login</button>
-            <div style="height: 10px;"></div>
-            <button onclick="window.location.href='register.html'" style="background-color: #2ecc71;">Register</button>
+    <nav class="landing-nav">
+        <a href="#" class="logo">
+            <i class="fas fa-graduation-cap"></i> LMS PRO
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="login.html" class="btn-secondary">Login</a>
+            <a href="register.html" class="btn-primary">Sign Up</a>
         </div>
-        <div class="links">
-             <a href="/swagger-ui.html">API Documentation (Swagger)</a>
+    </nav>
+
+    <header class="hero">
+        <h1>Transform Your Learning Journey Today</h1>
+        <p>A comprehensive platform designed for educators and students to manage courses, assignments, and grades with
+            ease.</p>
+        <div class="hero-btns">
+            <button onclick="window.location.href='register.html'" class="btn-primary btn-hero">Get Started for
+                Free</button>
+            <button onclick="window.location.href='login.html'" class="btn-secondary btn-hero">Member Login</button>
         </div>
-    </div>
+    </header>
+
+    <section id="features" class="features">
+        <div class="section-header">
+            <h2>Why Choose LMS PRO?</h2>
+            <p>Everything you need to deliver an exceptional educational experience.</p>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-book-open"></i>
+                <h3>Course Management</h3>
+                <p>Easily organize and manage your course materials, lectures, and resources in one central place.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-tasks"></i>
+                <h3>Interactive Assignments</h3>
+                <p>Create diverse assignments and track student submissions with real-time feedback and grading.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Progress Analytics</h3>
+                <p>Monitor student performance with intuitive dashboards and detailed analytics reports.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Ready to start teaching?</h2>
+        <p>Join thousands of educators who trust LMS PRO for their learning needs.</p>
+        <button onclick="window.location.href='register.html'" class="btn-primary btn-hero btn-white">Create Your
+            Account</button>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-graduation-cap"></i> LMS PRO
+            </div>
+            <div class="footer-links">
+                <a href="/swagger-ui.html" style="color: var(--text-muted); text-decoration: none;">
+                    <i class="fas fa-code"></i> API Documentation
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 LMS PRO. All rights reserved.
+        </div>
+    </footer>
 </body>
+
 </html>

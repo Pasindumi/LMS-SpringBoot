@@ -6,49 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMS - Instructor Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/admin.css"> <!-- Reusing admin styles -->
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .sidebar {
-            background-color: #2c3e50;
-        }
-
-        /* Darker sidebar for distinction */
-        .sidebar-header {
-            background-color: #34495e;
-        }
-
-        /* Reuse other styles */
-        .course-details-header {
-            background: #252525;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .course-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-        }
-
-        .course-tabs button {
-            background: none;
-            border: none;
-            color: #aaa;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .course-tabs button.active {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-        }
-
         .course-tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -57,153 +18,719 @@
 </head>
 
 <body>
-
     <div class="admin-container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>LMS Instructor</h2>
+            <div class="sidebar-header" style="padding: 2.5rem 2rem; border-bottom: 1px solid var(--bg-main);">
+                <div class="logo" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div
+                        style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; color: var(--text-main);">LMS<span
+                            style="color: var(--primary);">.</span></h3>
+                </div>
             </div>
-            <ul class="sidebar-menu">
-                <li class="active" onclick="showSection('myCourses')">
-                    <i class="fas fa-chalkboard-teacher"></i> My Courses
+            <ul class="sidebar-menu" style="padding: 1.5rem 1rem;">
+                <li class="active" onclick="showSection('myCourses')" style="margin-bottom: 0.5rem;">
+                    <i class="fas fa-th-large"></i> <span>Dashboard</span>
                 </li>
-                <!-- Future: Profile, Schedule -->
-                <li onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                <li onclick="showSection('profile')" style="margin-bottom: 0.5rem;">
+                    <i class="fas fa-user-circle"></i> <span>My Profile</span>
+                </li>
+                <li onclick="alert('Messages - Coming Soon')" style="margin-bottom: 0.5rem;">
+                    <i class="fas fa-comment-alt"></i> <span>Messages</span>
+                </li>
+                <li onclick="alert('Reports - Coming Soon')" style="margin-bottom: 0.5rem;">
+                    <i class="fas fa-chart-pie"></i> <span>Reports</span>
                 </li>
             </ul>
+            <div onclick="logout()" class="logout-btn" style="margin: auto 1rem 2rem 1rem;">
+                <i class="fas fa-power-off"></i> <span>Sign Out</span>
+            </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
             <header>
-                <div class="header-left">
-                    <h1>Instructor Dashboard</h1>
+                <div class="header-left" style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="hamburger-btn" onclick="toggleSidebar()"
+                        style="display: none; background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer;">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1>Instructor Dashboard</h1>
+                        <p style="color: var(--text-muted); font-size: 0.875rem;">Manage your courses and students</p>
+                    </div>
                 </div>
                 <div class="header-right">
-                    <div class="user-info">
-                        <span id="instructorName">Instructor Name</span>
-                        <small id="instructorRole">INSTRUCTOR</small>
+                    <div class="notification-bell-container">
+                        <i class="fas fa-bell notification-bell" onclick="toggleNotifications(event)"></i>
+                        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                        <div id="notificationDropdown" class="notification-dropdown">
+                            <div class="notification-header">
+                                <h4>Notifications</h4>
+                                <span style="font-size: 0.75rem; color: var(--primary); cursor: pointer;"
+                                    onclick="loadNotifications()">Refresh</span>
+                            </div>
+                            <div id="notificationList" class="notification-list">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-info" style="text-align: right;">
+                        <span id="instructorName" style="font-weight: 700; color: var(--text-main);">Instructor
+                            Name</span><br>
+                        <small id="instructorRole" class="badge badge-primary">INSTRUCTOR</small>
                     </div>
                 </div>
             </header>
 
-            <!-- My Courses Section -->
+            <!-- My Courses (Overview) Section -->
             <div id="myCourses" class="section active">
-                <div class="section-header">
-                    <h2>Assigned Courses</h2>
+                <div class="stats-overview"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+                    <div class="stat-card premium-hover">
+                        <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Students</h3>
+                            <p class="value" id="totalStudentsCount">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card premium-hover">
+                        <div class="stat-icon green"><i class="fas fa-book"></i></div>
+                        <div class="stat-info">
+                            <h3>Active Courses</h3>
+                            <p class="value" id="activeCoursesCount">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card premium-hover">
+                        <div class="stat-icon amber"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <h3>Pending Submissions</h3>
+                            <p class="value" id="pendingSubmissionsCount">0</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-grid" id="coursesList">
+
+                <div class="dashboard-secondary-grid"
+                    style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+                    <!-- Left: Upcoming Sessions -->
+                    <div class="premium-card">
+                        <div class="section-header"
+                            style="justify-content: flex-start; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                            <i class="fas fa-calendar-alt" style="color: var(--primary); font-size: 1.25rem;"></i>
+                            <h2 style="margin: 0; font-size: 1.25rem;">Upcoming Online Sessions</h2>
+                        </div>
+                        <div id="upcomingLectures" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">No sessions scheduled.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: System Announcements -->
+                    <div class="premium-card">
+                        <div class="section-header"
+                            style="justify-content: flex-start; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                            <i class="fas fa-bullhorn" style="color: var(--warning); font-size: 1.25rem;"></i>
+                            <h2 style="margin: 0; font-size: 1.25rem;">System Announcements</h2>
+                        </div>
+                        <div id="globalAnnouncements" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Loading announcements...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header" style="margin-bottom: 1.5rem;">
+                    <h2 style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i class="fas fa-layer-group" style="color: var(--primary);"></i> Assigned Courses
+                    </h2>
+                </div>
+                <div class="grid-container" id="coursesList">
                     <!-- Courses populated here -->
                 </div>
             </div>
 
             <!-- Course Details Section (Hidden by default) -->
             <div id="courseDetails" class="section">
-                <button onclick="showSection('myCourses')" class="btn-secondary" style="margin-bottom: 20px;">
-                    <i class="fas fa-arrow-left"></i> Back to Courses
+                <button onclick="showSection('myCourses')" class="btn-secondary"
+                    style="margin-bottom: 2rem; border-radius: 50px;">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </button>
 
-                <div class="course-details-header">
-                    <h2 id="cdTitle">Course Title</h2>
-                    <p><span id="cdCode" class="badge badge-primary">CODE</span> <span id="cdTerm"
-                            class="badge badge-secondary">Semester 1</span></p>
-                    <p id="cdDescription" style="color: #ccc; margin-top: 10px;">Description...</p>
-                    <div style="margin-top: 15px;">
-                        <button onclick="showEditCourseModal()" class="btn-primary">Edit Details</button>
+                <div class="course-detail-header premium-card"
+                    style="position: relative; overflow: hidden; margin-bottom: 2.5rem; border-top: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h2 id="cdTitle"
+                                style="margin: 0 0 0.5rem 0; font-size: 1.75rem; font-weight: 800; border: none; padding: 0;">
+                                Course Title</h2>
+                            <div style="display: flex; gap: 0.75rem; align-items: center; margin-bottom: 1.5rem;">
+                                <span id="cdCode" class="badge badge-primary">CODE</span>
+                                <span id="cdTerm" class="badge badge-secondary"
+                                    style="background: var(--bg-main); color: var(--text-muted);">Semester 1</span>
+                                <span class="badge" style="background: var(--success-soft); color: var(--success);"
+                                    id="cdStatus">Active</span>
+                            </div>
+                            <p id="cdDescription"
+                                style="color: var(--text-muted); max-width: 800px; line-height: 1.6; margin-bottom: 1.5rem;">
+                                Description...</p>
+                        </div>
+                        <button onclick="showEditCourseModal()" class="btn-primary"
+                            style="border-radius: 50px; padding: 0.75rem 1.5rem;">
+                            <i class="fas fa-edit"></i> Edit Course
+                        </button>
+                    </div>
+                    <div class="header-stats"
+                        style="display: flex; gap: 3rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                        <div class="h-stat">
+                            <small
+                                style="display: block; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">Enrolled
+                                Students</small>
+                            <span id="cdStudentCount"
+                                style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">0</span>
+                        </div>
+                        <div class="h-stat">
+                            <small
+                                style="display: block; color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;">Credit
+                                Value</small>
+                            <span id="cdCredits"
+                                style="font-size: 1.25rem; font-weight: 800; color: var(--text-main);">0</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="course-tabs">
-                    <button class="active" onclick="showCourseTab('overview')">Overview</button>
-                    <button onclick="showCourseTab('students')">Students</button>
-                    <button onclick="showCourseTab('assignments')">Assignments</button>
-                    <button onclick="showCourseTab('materials')">Materials</button>
-                    <button onclick="showCourseTab('announcements')">Announcements</button>
-                    <button onclick="showCourseTab('grades')">Grades</button>
+                <div class="course-tabs-container"
+                    style="background: white; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 0.5rem; margin-bottom: 2rem;">
+                    <div class="course-tabs" style="display: flex; gap: 0.5rem; border: none; padding: 0;">
+                        <button class="tab-btn active" onclick="showCourseTab('tasks')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">Tasks</button>
+                        <button class="tab-btn" onclick="showCourseTab('students')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">Students</button>
+                        <button class="tab-btn" onclick="showCourseTab('assignments')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">Assignments</button>
+                        <button class="tab-btn" onclick="showCourseTab('lectures')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">Lectures</button>
+                        <button class="tab-btn" onclick="showCourseTab('materials')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">Materials</button>
+                        <button class="tab-btn" onclick="showCourseTab('announcements')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">News</button>
+                        <button class="tab-btn" onclick="showCourseTab('grades')"
+                            style="flex: 1; padding: 0.75rem; border-radius: var(--radius-md); border: none; background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; transition: var(--transition);">Grades</button>
+                    </div>
                 </div>
 
                 <!-- Tab Contents -->
-                <div id="cd-overview" class="course-tab-content" style="display: block;">
+                <div id="cd-overview" class="course-tab-content active" style="display: block;">
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <h3>Students</h3>
+                            <h3>Enrolled Students</h3>
                             <p id="cdStudentCount">0</p>
                         </div>
                         <div class="stat-card">
-                            <h3>Credits</h3>
-                            <p id="cdCredits">0</p>
+                            <h3>Course Status</h3>
+                            <p id="cdStatus">Active</p>
                         </div>
                         <div class="stat-card">
-                            <h3>Status</h3>
-                            <p id="cdStatus">Active</p>
+                            <h3>Credit Value</h3>
+                            <p id="cdCredits">0</p>
                         </div>
                     </div>
                 </div>
 
-                <div id="cd-students" class="course-tab-content">
-                    <h3>Enrolled Students</h3>
-                    <p>Student list will be implemented here.</p>
+                <div id="cd-students" class="course-tab-content"
+                    style="padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Enrolled Students</h3>
+                        <button class="btn-primary" onclick="showAddStudentModal()">+ Enroll Student</button>
+                    </div>
+                    <div id="enrolledStudentsList" class="grid-container">
+                        <!-- Enrolled students list -->
+                    </div>
                 </div>
 
-                <div id="cd-assignments" class="course-tab-content">
-                    <h3>Assignments</h3>
-                    <button class="btn-primary" onclick="alert('Create Assignment - Coming Soon')">+ New
-                        Assignment</button>
-                    <p>No assignments yet.</p>
+                <div id="cd-tasks" class="course-tab-content"
+                    style="padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Tasks</h3>
+                        <button class="btn-primary" onclick="showAddTaskModal()">+ New Task</button>
+                    </div>
+                    <div id="tasksList" class="grid-container">
+                        <!-- Tasks list -->
+                    </div>
                 </div>
 
-                <div id="cd-materials" class="course-tab-content">
-                    <h3>Course Materials</h3>
-                    <button class="btn-primary" onclick="alert('Upload Material - Coming Soon')">+ Upload
-                        Material</button>
-                    <p>No materials yet.</p>
+                <div id="cd-assignments" class="course-tab-content"
+                    style="padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Assignments</h3>
+                        <button class="btn-primary" onclick="showAddAssignmentModal()">+ New Assignment</button>
+                    </div>
+                    <div id="assignmentsList" class="grid-container">
+                        <!-- Assignments list -->
+                    </div>
                 </div>
 
-                <div id="cd-announcements" class="course-tab-content">
-                    <h3>Course Announcements</h3>
-                    <button class="btn-primary" onclick="alert('Post Announcement - Coming Soon')">+ Post
-                        Announcement</button>
-                    <p>No announcements yet.</p>
+                <div id="cd-materials" class="course-tab-content"
+                    style="padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Course Materials</h3>
+                        <button class="btn-primary" onclick="showAddMaterialModal()">+ Upload Material</button>
+                    </div>
+                    <div id="courseMaterialsList" class="grid-container">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
 
-                <div id="cd-grades" class="course-tab-content">
-                    <h3>Grades</h3>
-                    <p>Gradebook will be implemented here.</p>
+                <div id="cd-announcements" class="course-tab-content"
+                    style="padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Course Announcements</h3>
+                        <button class="btn-primary" onclick="showAddAnnouncementModal()">+ Post Announcement</button>
+                    </div>
+                    <div id="announcementsList" class="grid-container">
+                        <!-- Announcements list -->
+                    </div>
+                </div>
+
+                <div id="cd-lectures" class="course-tab-content"
+                    style="display:none; padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700;">Online Sessions</h3>
+                        <button class="btn-primary" onclick="showScheduleLectureModal()"
+                            style="border-radius: 50px; padding: 0.75rem 1.5rem;">
+                            <i class="fas fa-plus"></i> New Online Session
+                        </button>
+                    </div>
+                    <div id="courseLecturesList" class="grid-container">
+                        <!-- Lectures list -->
+                    </div>
+                </div>
+
+                <div id="cd-grades" class="course-tab-content"
+                    style="padding: 1.5rem; background: white; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div class="section-header"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3>Grade Sheets / Results</h3>
+                        <button class="btn-primary" onclick="showAddGradeSheetModal()">+ Upload Results</button>
+                    </div>
+                    <div id="gradeSheetsList" class="grid-container">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
             </div>
 
-        </div>
-    </div>
-
-    <!-- Edit Course Modal (Reused structure) -->
-    <div id="editCourseModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('editCourseModal')">&times;</span>
-            <h3>Edit Course Details</h3>
-            <form id="editCourseForm">
-                <input type="hidden" id="editCourseId">
-                <input type="text" id="editCourseTitle" placeholder="Course Title" required>
-                <input type="text" id="editCourseCode" placeholder="Course Code" required>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <input type="number" id="editCourseSemester" placeholder="Semester" required min="1" max="8">
-                    <input type="number" id="editCourseCredits" placeholder="Credits" required min="1">
+            <div id="profile" class="section">
+                <div class="section-header" style="margin-bottom: 2rem;">
+                    <h2>Professional Profile Settings</h2>
+                    <p style="color: var(--text-muted);">Update your personal and professional information</p>
                 </div>
-                <input type="text" id="editCourseCategory" placeholder="Category" required>
-                <textarea id="editCourseDescription" placeholder="Description" required></textarea>
-                <select id="editCourseStatus" required
-                    style="width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; color: white; border: 1px solid #444;">
-                    <option value="ACTIVE">Active</option>
-                    <option value="ARCHIVED">Archived</option>
-                </select>
-                <button type="submit">Save Changes</button>
-            </form>
-        </div>
-    </div>
 
-    <script src="js/app.js"></script>
-    <script src="js/instructor.js"></script>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                    <!-- Profile Card -->
+                    <div class="card premium" style="text-align: center; padding: 2.5rem 2rem;">
+                        <div style="position: relative; width: 120px; height: 120px; margin: 0 auto 1.5rem;">
+                            <div id="profileAvatar"
+                                style="width: 100%; height: 100%; border-radius: 50%; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 700; border: 4px solid white; box-shadow: var(--shadow);">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                        </div>
+                        <h3 id="profileNameDisplay" style="margin: 0; color: var(--text-main); font-size: 1.5rem;">
+                            Instructor Name</h3>
+                        <p id="profileRoleDisplay"
+                            style="color: var(--primary); font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; margin-top: 0.5rem;">
+                            Instructor / Lecturer</p>
+
+                        <div
+                            style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--bg-main); text-align: left;">
+                            <div
+                                style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                                <i class="fas fa-envelope" style="color: var(--primary); width: 20px;"></i>
+                                <span id="profileEmailDisplay">instructor@lms.com</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card premium-card" style="padding: 2rem;">
+                        <h3 style="margin-bottom: 2rem; border-bottom: 1px solid var(--bg-main); padding-bottom: 1rem;">
+                            <i class="fas fa-edit" style="color: var(--primary);"></i> Edit Personal Details
+                        </h3>
+                        <form id="updateProfileForm">
+                            <div
+                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">Full
+                                        Name</label>
+                                    <input type="text" id="editProfileName" required
+                                        style="width: 100%; margin: 0; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">Email
+                                        Address</label>
+                                    <input type="email" id="editProfileEmail" readonly
+                                        style="width: 100%; margin: 0; background: #f1f5f9; cursor: not-allowed; color: var(--text-muted); padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                                </div>
+                            </div>
+
+                            <div
+                                style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">Phone
+                                        Number</label>
+                                    <input type="text" id="editProfilePhone" placeholder="Unspecified"
+                                        style="width: 100%; margin: 0; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                                </div>
+                                <div class="form-group">
+                                    <label
+                                        style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">Specialization</label>
+                                    <input type="text" id="editProfileSpec" placeholder="e.g. Computer Science"
+                                        style="width: 100%; margin: 0; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border);">
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.5rem;">
+                                <label
+                                    style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.85rem; color: var(--text-main);">Professional
+                                    Bio</label>
+                                <textarea id="editProfileBio" rows="4"
+                                    placeholder="Briefly describe your professional background..."
+                                    style="width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border); font-family: inherit; resize: vertical;"></textarea>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                                <button type="button" class="btn-secondary" onclick="loadProfile()">Reset</button>
+                                <button type="submit" class="btn-primary" style="padding: 0.75rem 2.5rem;">Save
+                                    Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Course Modal (Reused structure) -->
+        <div id="editCourseModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('editCourseModal')">&times;</span>
+                <h3>Edit Course Details</h3>
+                <form id="editCourseForm">
+                    <input type="hidden" id="editCourseId">
+                    <input type="text" id="editCourseTitle" placeholder="Course Title" required>
+                    <input type="text" id="editCourseCode" placeholder="Course Code" required>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="number" id="editCourseSemester" placeholder="Semester" required min="1" max="8">
+                        <input type="number" id="editCourseCredits" placeholder="Credits" required min="1">
+                    </div>
+                    <input type="text" id="editCourseCategory" placeholder="Category" required>
+                    <textarea id="editCourseDescription" placeholder="Description" required></textarea>
+                    <select id="editCourseStatus" required>
+                        <option value="ACTIVE">Active</option>
+                        <option value="ARCHIVED">Archived</option>
+                    </select>
+                    <button type="submit" class="btn-primary auth-btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="addTaskModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addTaskModal')">&times;</span>
+                <h3>Add New Task</h3>
+                <form id="addTaskForm">
+                    <input type="text" id="taskTitle" placeholder="Task Title" required>
+                    <textarea id="taskDescription" placeholder="Description" required></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="datetime-local" id="taskDeadline" required>
+                        <input type="number" id="taskMarks" placeholder="Total Marks" required>
+                    </div>
+                    <!-- File Upload -->
+                    <p>Attach File (Optional):</p>
+                    <input type="file" id="taskFile">
+                    <button type="submit" class="btn-primary auth-btn">Create Task</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="addAssignmentModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addAssignmentModal')">&times;</span>
+                <h3>Add New Assignment</h3>
+                <form id="addAssignmentForm">
+                    <input type="text" id="assignmentTitle" placeholder="Assignment Title" required>
+                    <textarea id="assignmentDescription" placeholder="Description" required></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="datetime-local" id="assignmentDeadline" required>
+                        <input type="number" id="assignmentMarks" placeholder="Total Marks" required>
+                    </div>
+                    <input type="text" id="allowedFileTypes" placeholder="Allowed File Types (e.g. pdf,docx)">
+                    <!-- File Upload (Instructions/Resource) -->
+                    <p>Attach Resource (Optional):</p>
+                    <input type="file" id="assignmentFile">
+                    <button type="submit" class="btn-primary auth-btn">Create Assignment</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="editAssignmentModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('editAssignmentModal')">&times;</span>
+                <h3>Edit Assignment</h3>
+                <form id="editAssignmentForm">
+                    <input type="hidden" id="editAsnId">
+                    <input type="text" id="editAsnTitle" placeholder="Assignment Title" required>
+                    <textarea id="editAsnDescription" placeholder="Description" required></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="datetime-local" id="editAsnDeadline" required>
+                        <input type="number" id="editAsnMarks" placeholder="Total Marks" required>
+                    </div>
+                    <input type="text" id="editAsnAllowedTypes" placeholder="Allowed File Types (e.g. pdf,docx)">
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Leave empty to keep existing resource.</p>
+                    <input type="file" id="editAsnFile">
+                    <button type="submit" class="btn-primary auth-btn">Update Assignment</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="editTaskModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('editTaskModal')">&times;</span>
+                <h3>Edit Task</h3>
+                <form id="editTaskForm">
+                    <input type="hidden" id="editTaskId">
+                    <input type="text" id="editTaskTitle" placeholder="Task Title" required>
+                    <textarea id="editTaskDescription" placeholder="Description" required></textarea>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="datetime-local" id="editTaskDeadline" required>
+                        <input type="number" id="editTaskMarks" placeholder="Total Marks" required>
+                    </div>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Leave empty to keep existing attachment.</p>
+                    <input type="file" id="editTaskFile">
+                    <button type="submit" class="btn-primary auth-btn">Update Task</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="addStudentModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addStudentModal')">&times;</span>
+                <h3>Enroll Student</h3>
+                <div class="form-group">
+                    <input type="text" id="studentSearch" placeholder="Search by name or email..."
+                        onkeyup="searchStudents()">
+                </div>
+                <div id="studentSearchResults" style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
+                    <!-- Search results -->
+                </div>
+            </div>
+        </div>
+
+        <div id="addAnnouncementModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addAnnouncementModal')">&times;</span>
+                <h3>Post New Announcement</h3>
+                <form id="addAnnouncementForm">
+                    <input type="text" id="annTitle" placeholder="Announcement Title" required>
+                    <textarea id="annContent" placeholder="Content" required></textarea>
+                    <div style="margin-bottom: 1rem;">
+                        <label
+                            style="display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 0.5rem;">Attachment
+                            Image (Optional)</label>
+                        <input type="file" id="annImage" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn-primary auth-btn">Post Announcement</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="viewSubmissionsModal" class="modal">
+            <div class="modal-content" style="max-width: 800px;">
+                <span class="close" onclick="closeModal('viewSubmissionsModal')">&times;</span>
+                <h3 id="asgnSubmissionsTitle">Assignment Submissions</h3>
+                <div id="submissionsList" style="margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                    <table class="degree-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Submitted At</th>
+                                <th>Attachment</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionsTableBody">
+                            <!-- Populated dynamicly -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="scheduleLectureModal" class="modal">
+            <div class="modal-content" style="max-width: 550px; padding: 2.5rem;">
+                <div class="modal-header"
+                    style="justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 1.25rem;">
+                    <h3 style="margin: 0; font-size: 1.5rem; font-weight: 800; border: none; padding: 0;"><i
+                            class="fas fa-video" style="color: var(--primary); margin-right: 0.75rem;"></i>Schedule
+                        Session</h3>
+                    <span class="close" onclick="closeModal('scheduleLectureModal')"
+                        style="font-size: 1.75rem; cursor: pointer; color: var(--text-muted);">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Schedule a new online
+                        meeting for <strong id="lectureCourseDisplay" style="color: var(--text-main);">this
+                            course</strong>.</p>
+                    <form id="scheduleLectureForm">
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label
+                                style="display: block; margin-bottom: 0.75rem; font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Session
+                                Title</label>
+                            <input type="text" id="lectureTitle" placeholder="e.g. Weekly Review - Week 5" required
+                                style="width: 100%; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label
+                                style="display: block; margin-bottom: 0.75rem; font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Description
+                                / Agenda</label>
+                            <textarea id="lectureDescription" rows="3"
+                                placeholder="What will be covered in this session?" required
+                                style="width: 100%; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid var(--border); font-family: inherit;"></textarea>
+                        </div>
+                        <div
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+                            <div class="form-group">
+                                <label
+                                    style="display: block; margin-bottom: 0.75rem; font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Date
+                                    & Time</label>
+                                <input type="datetime-local" id="lectureDateTime" required
+                                    style="width: 100%; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    style="display: block; margin-bottom: 0.75rem; font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Meeting
+                                    Link</label>
+                                <input type="url" id="lectureLink" placeholder="Zoom, Meet, or Teams link" required
+                                    style="width: 100%; padding: 0.85rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary"
+                            style="width: 100%; padding: 1.1rem; font-size: 1.1rem; font-weight: 800; border-radius: 50px; margin-top: 1rem; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);">
+                            Schedule Session <i class="fas fa-paper-plane" style="margin-left: 0.5rem;"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="addMaterialModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addMaterialModal')">&times;</span>
+                <h3 style="margin-bottom: 2rem;"><i class="fas fa-file-upload"></i> Upload Course Material</h3>
+                <form id="addMaterialForm">
+                    <div class="form-group">
+                        <label>Material Title</label>
+                        <input type="text" id="materialTitle" placeholder="e.g. Lecture 05 - Neural Networks" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="materialDescription" placeholder="What is this material about?"
+                            required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="materialType" required onchange="toggleMaterialInputs()">
+                            <option value="LECTURE_VIDEO">Lecture Video (Link)</option>
+                            <option value="SLIDE">Lecture Slides (File)</option>
+                            <option value="RECORDED_LIVE">Recorded Session (Link)</option>
+                            <option value="OTHER">Other Resource (File)</option>
+                        </select>
+                    </div>
+                    <div id="materialUrlContainer" class="form-group">
+                        <label>Video Link / URL</label>
+                        <input type="url" id="materialUrl" placeholder="Enter video URL (YouTube/Drive)">
+                    </div>
+                    <div id="materialFileContainer" class="form-group" style="display:none;">
+                        <label>Upload File</label>
+                        <input type="file" id="materialFile">
+                    </div>
+                    <button type="submit" class="btn-primary auth-btn" style="width: 100%;">Upload Material</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="addGradeSheetModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addGradeSheetModal')">&times;</span>
+                <h3 style="margin-bottom: 2rem;"><i class="fas fa-file-invoice"></i> Upload Result Sheet</h3>
+                <form id="addGradeSheetForm">
+                    <div class="form-group">
+                        <label>Sheet Title</label>
+                        <input type="text" id="gradeSheetTitle" placeholder="e.g. Midterm Results 2026" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Result Sheet (PDF/Excel)</label>
+                        <input type="file" id="gradeSheetFile" required>
+                    </div>
+                    <button type="submit" class="btn-primary auth-btn" style="width: 100%;">Post Results</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="viewSubmissionsModal" class="modal">
+            <div class="modal-content" style="max-width: 900px;">
+                <span class="close" onclick="closeModal('viewSubmissionsModal')">&times;</span>
+                <h3 id="submissionsModalTitle" style="margin-bottom: 2rem;">Submissions</h3>
+                <div style="overflow-x: auto;">
+                    <table class="submissions-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Time</th>
+                                <th>File</th>
+                                <th>Grade</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submissionsModalBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="gradeSubmissionModal" class="modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <span class="close" onclick="closeModal('gradeSubmissionModal')">&times;</span>
+                <h3>Grade Submission</h3>
+                <form id="gradeSubmissionForm">
+                    <input type="hidden" id="gradeSubmissionId">
+                    <input type="hidden" id="gradeSubmissionType"> <!-- TASK or ASSIGNMENT -->
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Marks / Grade</label>
+                        <input type="text" id="submissionGrade" placeholder="e.g. 85 or A" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Feedback</label>
+                        <textarea id="submissionFeedback" placeholder="Enter feedback for the student..."
+                            style="width: 100%; height: 100px; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border); font-family: inherit;"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary auth-btn" style="width: 100%;">Save Grade</button>
+                </form>
+            </div>
+        </div>
+
+        <script src="js/app.js"></script>
+        <script src="js/instructor.js"></script>
+        <script>
+            // Any specific initialization can go here
+        </script>
 </body>
 
 </html>

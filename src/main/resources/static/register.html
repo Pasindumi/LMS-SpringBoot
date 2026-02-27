@@ -6,37 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LMS - Register</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
-    <div class="container">
-        <h2>Register</h2>
-        <form id="registerForm">
+<body class="auth-body">
+    <div class="auth-card" style="max-width: 500px;">
+        <div class="auth-header">
+            <h1 style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem;"><i
+                    class="fas fa-graduation-cap"></i> LMS PRO</h1>
+            <h2>Create Account</h2>
+            <p>Join the LMS community today</p>
+        </div>
+        <form id="registerForm" class="auth-form">
             <div class="form-group">
                 <label for="name">Full Name</label>
-                <input type="text" id="name" required>
+                <div class="input-icon-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="name" placeholder="John Doe" required>
+                </div>
             </div>
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required>
+                <label for="email">Email Address</label>
+                <div class="input-icon-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" placeholder="name@example.com" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" required>
+                <div class="input-icon-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
             </div>
             <div class="form-group">
-                <label for="role">Role</label>
-                <select id="role" style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 5px;">
-                    <option value="STUDENT">Student</option>
-                    <option value="INSTRUCTOR">Instructor</option>
-                    <option value="ADMIN">Admin</option>
-                </select>
+                <label for="role">I am a...</label>
+                <div class="input-icon-group">
+                    <i class="fas fa-user-tag"></i>
+                    <select id="role" required>
+                        <option value="STUDENT">Student</option>
+                        <option value="INSTRUCTOR">Instructor</option>
+                        <option value="ADMIN">Admin</option>
+                    </select>
+                </div>
             </div>
-            <button type="submit">Register</button>
+            <button type="submit" class="btn-primary auth-btn">Create Account</button>
         </form>
-        <div id="message" style="text-align: center; margin-top: 10px;"></div>
-        <div class="links">
-            <a href="login.html">Already have an account? Login</a>
+        <div id="message" style="text-align: center; margin-top: 1rem; font-size: 0.875rem; font-weight: 500;"></div>
+        <div class="auth-footer">
+            Already have an account? <a href="login.html">Login</a>
         </div>
     </div>
 

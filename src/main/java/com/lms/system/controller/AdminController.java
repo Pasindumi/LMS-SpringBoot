@@ -29,14 +29,21 @@ public class AdminController {
     @Autowired
     private AnnouncementService announcementService;
 
+    @Autowired
+    private com.lms.system.service.DegreeService degreeService;
+
     // --- Overview / Stats ---
     @GetMapping("/stats")
     public ResponseEntity<?> getStats() {
         try {
             Map<String, Object> stats = new HashMap<>();
-            stats.put("totalUsers", userService.getAllUsers().size());
+            List<User> allUsers = userService.getAllUsers();
+            stats.put("totalUsers", allUsers.size());
+            stats.put("totalStudents", allUsers.stream().filter(u -> "STUDENT".equals(u.getRole())).count());
+            stats.put("totalInstructors", allUsers.stream().filter(u -> "INSTRUCTOR".equals(u.getRole()) || "LECTURER".equals(u.getRole())).count());
             stats.put("totalCourses", courseService.getAllCourses().size());
             stats.put("totalAnnouncements", announcementService.getAllAnnouncements().size());
+            stats.put("totalDegrees", degreeService.getAllDegrees().size());
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
@@ -148,15 +155,26 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/announcements/{id}")
+    public ResponseEntity<?> updateAnnouncement(@PathVariable String id, @RequestBody Announcement announcement) {
+        Announcement existing = announcementService.getAnnouncementById(id);
+        if (existing != null) {
+            existing.setTitle(announcement.getTitle());
+            existing.setContent(announcement.getContent());
+            if (announcement.getImageUrl() != null) {
+                existing.setImageUrl(announcement.getImageUrl());
+            }
+            announcementService.updateAnnouncement(id, existing);
+            return ResponseEntity.ok(existing);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     // --- Lecture Management (Stub) ---
     @GetMapping("/lectures")
     public ResponseEntity<?> getLectures() {
         return ResponseEntity.ok(List.of("Lecture 1", "Lecture 2")); // Placeholder
     }
-    // --- Degree Management ---
-
-    @Autowired
-    private com.lms.system.service.DegreeService degreeService;
 
     @GetMapping("/degrees")
     public ResponseEntity<?> getAllDegrees() {
